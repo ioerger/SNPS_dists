@@ -1,1 +1,1 @@
-# SNPS_dists
+# SNP_dists
