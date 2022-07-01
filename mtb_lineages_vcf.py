@@ -1,7 +1,6 @@
 import sys
 
 # based on table of SNPs in Coll et al (2014). https://www.nature.com/articles/ncomms5812
-# note: just looking for matches by coordinates, not nucleotides
 
 if len(sys.argv)<3:
   print("usage: python mtb_lineages_vcf.py <.vcf> coll_2014_LS_SNPs.txt")
