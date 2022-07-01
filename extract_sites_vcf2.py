@@ -57,7 +57,17 @@ for site in sites:
   else: bad_sites.append(site)
 filtered = len(bad_sites)
 candidates = genome_size-filtered
-sys.stderr.write("genome size: %s, sites filtered out: %s, candidate sites: %s, SNP sites: %s\n" % (genome_size,filtered,candidates,len(snp_sites)))
+rate = len(snp_sites)/float(candidates)
+
+#sys.stderr.write("num of isolates: %s, ref genome size: %s, sites filtered out: %s, candidate sites: %s, coverage: %0.1f%%, SNP sites: %s, \n" % (len(datasets),genome_size,filtered,candidates,candidates*100/float(genome_size),len(snp_sites)))
+
+sys.stderr.write("number of isolates:  %s\n" % len(datasets))
+sys.stderr.write("ref genome size:     %s\n" % genome_size)
+sys.stderr.write("sites filtered out:  %s\n" % filtered)
+sys.stderr.write("candidate sites:     %s\n" % candidates)
+sys.stderr.write("coverage:            %0.2f%%\n" % (candidates*100/float(genome_size)))
+sys.stderr.write("allelic (SNP) sites: %s\n" % (len(snp_sites)))
+sys.stderr.write("allelic frequency:   %0.6f (%0.2f SNP sites per 1kb)\n" % (rate,rate*1000))
 
 snplists = []
 for i,hash in enumerate(datasets):
