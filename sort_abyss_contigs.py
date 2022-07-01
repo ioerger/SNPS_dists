@@ -31,12 +31,15 @@ for i in range(len(h)):
 
 pairs.sort(reverse=True)
 
+sizes = []
 for size,i in pairs:
   if size<1000: break
   print(h[i])
   print_seq(s[i])
+  sizes += [size]*size
 
 temp = list(filter(lambda x: x[0]>1000,pairs))
-sys.stderr.write("%s contigs of size > 1kb\n" % len(temp))
-sys.stderr.write("longest contig: %sbp\n" % pairs[0][0])
-sys.stderr.write("total length: %sbp\n" % (sum([x[0] for x in pairs])))
+sys.stderr.write("contigs > 1kb:  %s\n" % len(temp))
+sys.stderr.write("longest contig: %s bp\n" % pairs[0][0])
+sys.stderr.write("total length:   %s bp\n" % (sum([x[0] for x in pairs])))
+sys.stderr.write("N50:            %s bp\n" % sizes[int(len(sizes)/2)])
