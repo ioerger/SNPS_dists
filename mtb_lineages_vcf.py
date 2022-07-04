@@ -23,4 +23,5 @@ for line in open(sys.argv[1]): # vcf file
     if ("**" not in lineage and mut==SNPs[pos][3]) or ("**" in lineage and mut!=SNPs[pos][3]): print("# %s" % ('\t'.join(v))); lineages.append(lineage)
 
 # the longest lineage name should be the most specific
-print(sorted(lineages,reverse=True)[0])
+if len(lineages)==0: print("unrecognized")
+else: print(sorted(lineages,reverse=True)[0])
