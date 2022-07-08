@@ -112,20 +112,24 @@ hash = hash_genes(genes,genome)
 for line in open(sys.argv[1]):
   if line[0]=='#': print(line.rstrip()); continue
   w = line.rstrip().split('\t')
-  kind = None
-  temp = []
+  pos = int(w[1])-1
+  ref,nuc = w[3],w[4]
+  gene = lookup_gene(pos,hash)
+  orf = "intergenic" if gene==None else "%s/%s" % (gene[2],gene[3])
+  temp = [orf]
   if w[6]=="PASS" and len(w[3])==1 and len(w[4])==1 and w[4]!='.': 
-    kind = "snp"; temp = ['*',kind]
-    pos = int(w[1])-1
-    ref,nuc = w[3],w[4]
-    gene = lookup_gene(pos,hash)
-    if gene==None: temp.append("intergenic")
-    else: 
+    temp += ['*','snp']
+    if gene==None: temp.append("%s:%s>%s" % (pos,ref,nuc))
+    else:
       result = calc_mutation(pos,nuc,gene,genome)
       temp.append("%s/%s:%s%s%s" % (result[0],result[1],result[7],result[8],result[9]))
-  if w[6]=="PASS" and len(w[4])>1: kind = "ins"; temp = ['*',kind,"+%s" % (len(w[4])-1)]
-  if w[6]=="PASS" and len(w[3])>1: kind = "mdel"; temp = ['*',kind,"+%s" % (len(w[3])-1)]
-  if "Del" in w[6]: kind = "del"; temp = ['*',kind]
+  if w[6]=="PASS" and (len(w[3])>1 or len(w[4])>1): 
+    temp.append('*')
+    dn = len(w[4])-len(w[3])
+    if dn>0:   temp += ['ins',"%s:+%s" % (orf,dn)]
+    elif dn<0: temp += ['mdel',"%s:%s" % (orf,dn)] # consolidated del line
+    else:      temp += ['subst',"%s:subst%s" % (orf,len(w[3]))]
+  if "Del" in w[6]: temp += ['x','del'] # individual del sites are needed for "exclusion" in snp_dists.py
   vals = w+temp
   print('\t'.join(vals))
   

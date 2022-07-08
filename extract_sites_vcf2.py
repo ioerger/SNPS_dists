@@ -8,11 +8,11 @@ def read_vcf2(fname):
   for line in open(fname):
     if line[0]=='#': continue
     w = line.rstrip().split('\t')
-    if '*' not in line: continue
+    if len(w)<12 or w[11] not in '*x': continue
     co,ref,mut = int(w[1]),w[3],w[4]
     genome_size = max(co,genome_size) # max
-    kind = w[11] # snp, ins, mdel (consolidated), or del (indiv nucs)
-    info = "" if len(w)<13 else w[12]
+    kind = w[12] # snp, ins, mdel (consolidated), or idel (indiv nucs)
+    info = "" if len(w)<14 else w[13]
     muts[co] = (kind,ref,mut,info)
   return muts
 
@@ -38,21 +38,28 @@ for i,muts in enumerate(datasets):
   snp = len(list(filter(lambda x: x[0]=='snp',muts.values()))) # just snps
   ins = len(list(filter(lambda x: x[0]=='ins',muts.values()))) 
   dels = len(list(filter(lambda x: x[0]=='mdel',muts.values()))) # consolidated dels
-  vals = [vcf2_files[i],snp,ins,dels]
+  vals = [vcf2_files[i],snp,ins,dels] # is this used anymore?
 sites = sorted(list(sites))
 
 # how many candidates sites are there? (not just snps)
 #   exclude sites where there is an ins/del in any strain
 #   exclude PPE/PGRS
 
+EXCLUDE_PPE = True
+EXCLUDE_PGRS = True
+EXCLUDE_INDELS = True
+if "+PPE" in sys.argv: EXCLUDE_PPE = False
+if "+indels" in sys.argv: EXCLUDE_INDELS = False
+
 snp_sites,bad_sites = [],[]
 for site in sites:
   good = True
   for muts in datasets:
     if site in muts:
-      if muts[site][0]!='snp': good = False
-      if "PPE" in muts[site][-1]: good = False
-      if "PGRS" in muts[site][-1]: good = False
+      if EXCLUDE_INDELS==False and muts[site][0] not in ['snp','ins','mdel']: good = False
+      elif EXCLUDE_INDELS==True and muts[site][0]!='snp': good = False
+      if EXCLUDE_PPE==True and "PPE" in muts[site][-1]: good = False
+      if EXCLUDE_PGRS==True and "PGRS" in muts[site][-1]: good = False
   if good==True: snp_sites.append(site)
   else: bad_sites.append(site)
 filtered = len(bad_sites)
