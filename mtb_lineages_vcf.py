@@ -21,7 +21,7 @@ for line in open(sys.argv[1]): # vcf file
     v = SNPs[pos]
     mut = "%s/%s" % (w[3],w[4])
     lineage = v[0]
-    if lineage=="lineage4.5" and "lineage1" in lineages: print("# skipping anaylsis of lineage4.5 in presence of SNP for lineage1"); continue
+    if lineage=="lineage4.5" and "lineage1" in lineages: print("# skipping analysis of lineage4.5 in presence of SNP for lineage1"); continue
     if kind=='PASS':
       if ("**" not in lineage and mut==SNPs[pos][3]) or ("**" in lineage and mut!=SNPs[pos][3]):
          print("# %s" % ('\t'.join(v))); lineages.append(lineage)
