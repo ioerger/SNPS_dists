@@ -62,8 +62,15 @@ for site in sites:
       if EXCLUDE_PGRS==True and "PGRS" in muts[site][-1]: good = False
   if good==True: snp_sites.append(site)
   else: bad_sites.append(site)
-filtered = len(bad_sites)
-candidates = genome_size-filtered
+filtered = len(bad_sites) # includes indels, but only among sites with a mutation
+
+bad_sites_hash = {}
+for i in bad_sites: bad_sites_hash[i] = 1
+for line in open("H37Rv3.prot_table"):
+  w = line.rstrip().split('\t')
+  if (EXCLUDE_PPE and "PPE" in w[7]) or (EXCLUDE_PGRS and "PGRS" in w[7]): 
+    for j in range(int(w[1]),int(w[2])+1): bad_sites_hash[j] = 1
+candidates = genome_size-len(bad_sites_hash.keys())
 rate = len(snp_sites)/float(candidates)
 
 #sys.stderr.write("num of isolates: %s, ref genome size: %s, sites filtered out: %s, candidate sites: %s, coverage: %0.1f%%, SNP sites: %s, \n" % (len(datasets),genome_size,filtered,candidates,candidates*100/float(genome_size),len(snp_sites)))
