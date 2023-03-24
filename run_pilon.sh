@@ -28,3 +28,4 @@ samtools index ${BASE}.bam_${REFBASE}
 
 java -Xmx16G -jar /pacific/home/ioerger/bin/pilon-1.24.jar --genome ${REF} --frags ${BASE}.bam_${REFBASE} --vcf
 mv pilon.vcf ${BASE}.vcf
+mv pilon.fasta ${BASE}_pilon.fna
