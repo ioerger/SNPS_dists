@@ -4,17 +4,22 @@ genome_size = 0
 
 def read_vcf2(fname):
   global genome_size
-  muts = {}
+  muts,nonpassing = {},{}
   for line in open(fname):
     if line[0]=='#': continue
     w = line.rstrip().split('\t')
+    if w[6]!="PASS": nonpassing[int(w[1])] = 1
     if len(w)<12 or w[11] not in '*x': continue
     co,ref,mut = int(w[1]),w[3],w[4]
     genome_size = max(co,genome_size) # max
     kind = w[12] # snp, ins, mdel (consolidated), or idel (indiv nucs)
     info = "" if len(w)<14 else w[13]
     muts[co] = (kind,ref,mut,info)
-  return muts
+  return muts,nonpassing
+
+if len(sys.argv)<3: 
+  print("usage: python extract_sites_vcf2.py <file_of_strain_names> <prot_table> [-vertical]")
+  sys.exit(0)
 
 isolates = []
 for line in open(sys.argv[1]): # file with vcf2 filenames
@@ -23,8 +28,11 @@ for line in open(sys.argv[1]): # file with vcf2 filenames
 vcf2_files = ["%s.vcf2" % x for x in isolates]
 
 datasets = [] # hash tables of mutations
+nonpassingsites = []
 for fname in vcf2_files:
-  datasets.append(read_vcf2(fname))
+  muts,nonpassing = read_vcf2(fname)
+  nonpassingsites.append(nonpassing)
+  datasets.append(muts)
   sys.stderr.write("done reading %s\n" % fname)
   sys.stderr.flush()
 
@@ -66,7 +74,7 @@ filtered = len(bad_sites) # includes indels, but only among sites with a mutatio
 
 bad_sites_hash = {}
 for i in bad_sites: bad_sites_hash[i] = 1
-for line in open("H37Rv3.prot_table"):
+for line in open(sys.argv[2]):
   w = line.rstrip().split('\t')
   if (EXCLUDE_PPE and "PPE" in w[7]) or (EXCLUDE_PGRS and "PGRS" in w[7]): 
     for j in range(int(w[1]),int(w[2])+1): bad_sites_hash[j] = 1
@@ -100,8 +108,13 @@ if VERTICAL==True: print('\t'.join("coord H37Rv".split()+isolates))
 for i in range(len(snp_sites)):
   co = snp_sites[i]
   ref,info,nucs = None,None,[]
-  for hash in datasets:
-    if co not in hash: nucs.append("."); continue
+  #for hash in datasets:
+  #  if co not in hash: nucs.append("."); continue
+  for hash,nonpassing in zip(datasets,nonpassingsites):
+    if co not in hash:
+      if co in nonpassing: nucs.append("?")
+      else: nucs.append("."); 
+      continue
     # rewrite ref and mut with each occurence; assume translation is the same for all
     kind,ref,mut,info = hash[co] 
     nucs.append(hash[co][2])
