@@ -34,7 +34,7 @@ for n,a in enumerate(strains):
     i,j = names.index(a),names.index(b)
     snps = 0
     for k in range(len(seqs[0])):
-      if seqs[i][k]!=seqs[j][k]: snps += 1
+      if seqs[i][k]!=seqs[j][k] and seqs[i][k]!='?' and seqs[j][k]!='?': snps += 1
     s += "%3d " % snps
   print(s)
   sys.stdout.flush()
