@@ -124,6 +124,7 @@ for i in range(len(snp_sites)):
   allnucs.append(nucs)
 if VERTICAL==True: sys.exit(0)
 
+if len(allnucs)==0: print("no variants found"); sys.exit(0)
 a,b = len(allnucs),len(allnucs[0])
 #rotated = [""]*b
 #for i in range(a):
