@@ -18,14 +18,14 @@ if ( -e ${BASE}.vcf ) then
   exit
 endif
 
-bwa aln ${REF} ${R1} > ${BASE}_R1.sai_${REFBASE} &
-bwa aln ${REF} ${R2} > ${BASE}_R2.sai_${REFBASE} &
+bwa aln ${REF} ${R1} >! ${BASE}_R1.sai_${REFBASE} &
+bwa aln ${REF} ${R2} >! ${BASE}_R2.sai_${REFBASE} &
 wait
-bwa sampe ${REF} ${BASE}_R1.sai_${REFBASE} ${BASE}_R2.sai_${REFBASE} ${R1} ${R2} > ${BASE}.sam_${REFBASE}
+bwa sampe ${REF} ${BASE}_R1.sai_${REFBASE} ${BASE}_R2.sai_${REFBASE} ${R1} ${R2} >! ${BASE}.sam_${REFBASE}
 
-samtools sort ${BASE}.sam_${REFBASE} > ${BASE}.bam_${REFBASE}
+samtools sort ${BASE}.sam_${REFBASE} >! ${BASE}.bam_${REFBASE}
 samtools index ${BASE}.bam_${REFBASE}
 
 java -Xmx16G -jar /pacific/home/ioerger/bin/pilon-1.24.jar --genome ${REF} --frags ${BASE}.bam_${REFBASE} --vcf
 mv pilon.vcf ${BASE}.vcf
-mv pilon.fasta ${BASE}_pilon.fna
+mv pilon.fasta ${BASE}.fna

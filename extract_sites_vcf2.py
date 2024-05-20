@@ -10,6 +10,7 @@ def read_vcf2(fname):
     w = line.rstrip().split('\t')
     if w[6]!="PASS": nonpassing[int(w[1])] = 1
     if len(w)<12 or w[11] not in '*x': continue
+    if "IMPRECISE" in line: continue
     co,ref,mut = int(w[1]),w[3],w[4]
     genome_size = max(co,genome_size) # max
     kind = w[12] # snp, ins, mdel (consolidated), or idel (indiv nucs)
@@ -23,6 +24,7 @@ if len(sys.argv)<3:
 
 isolates = []
 for line in open(sys.argv[1]): # file with vcf2 filenames
+  if line[0]=='#': continue
   w = line.rstrip().split()
   isolates.append(w[0])
 vcf2_files = ["%s.vcf2" % x for x in isolates]

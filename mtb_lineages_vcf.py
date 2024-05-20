@@ -36,7 +36,7 @@ for line in open(sys.argv[1]): # vcf file
       print("#   Ambiguous lineage-specific sites could indicate a mixed isolate")
       problematic = True
 
-if problematic: print "unclear" # this is different from 'unrecognized'
+if problematic: print("unclear") # this is different from 'unrecognized'
 elif len(lineages)==0: print("unrecognized")
 else:
   baselin = lineages[0][7] # digit, like 1-7 or B (for BOV)
