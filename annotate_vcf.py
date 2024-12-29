@@ -119,7 +119,7 @@ for line in open(sys.argv[1]):
   temp = [orf]
   if w[6]=="PASS" and len(w[3])==1 and len(w[4])==1 and w[4]!='.': 
     temp += ['*','snp']
-    if gene==None: temp.append("%s:%s>%s" % (pos,ref,nuc))
+    if gene==None: temp.append("%s:%s>%s" % (pos+1,ref,nuc))
     else:
       result = calc_mutation(pos,nuc,gene,genome)
       temp.append("%s/%s:%s%s%s" % (result[0],result[1],result[7],result[8],result[9]))
