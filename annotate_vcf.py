@@ -130,6 +130,19 @@ for line in open(sys.argv[1]):
     elif dn<0: temp += ['mdel',"%s:%s" % (orf,dn)] # consolidated del line
     else:      temp += ['subst',"%s:subst%s" % (orf,len(w[3]))]
   if "Del" in w[6]: temp += ['x','del'] # individual del sites are needed for "exclusion" in snp_dists.py
-  vals = w+temp
-  print('\t'.join(vals))
+
+  cov,het = -1,-1
+  info = w[7]
+  x,y = info.find("DP="),info.find("BC=")
+  if x!=-1 and y!=-1:
+    DP = info[x+3:info.find(";",x)]
+    BC = info[y+3:info.find(";",y)]
+    cov = int(DP)
+    nucs = BC.split(',')
+    nucs = [int(x) for x in nucs]
+    a,b = max(nucs),sum(nucs)
+    het = 0 if b==0 else (b-a)/float(b)
+
+  vals = w+[cov,round(het,3)]+temp
+  print('\t'.join([str(x) for x in vals]))
   
